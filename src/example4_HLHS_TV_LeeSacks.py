@@ -157,7 +157,7 @@ def stress(x, y):
     # I1 has to be less than 3.8
     I1 = torch.where((I1 - 3) > 0.8, 3.8, I1)
 
-    coeff = c0 + c1 * c2 * (I1 - 3) * torch.exp(c2 * (I1 - 3) ** 2)
+    coeff = c0 + 2 * c1 * c2 * (I1 - 3) * torch.exp(c2 * (I1 - 3) ** 2)
 
     Pxx = coeff * Fxx
     Pyy = coeff * Fyy
@@ -292,8 +292,8 @@ variables = dde.callbacks.VariableValue(
 model.compile(
     "adam",
     loss=loss_type,
-    lr=1e-3,
-    decay=["step", 15000, 0.61],
+    lr=1e-4,
+    decay=["step", 10000, 0.84],
     loss_weights=[1e-4] * 10 + [1],
     external_trainable_variables=external_trainable_variables,
 )
