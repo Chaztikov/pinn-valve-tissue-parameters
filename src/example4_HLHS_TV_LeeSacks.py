@@ -145,7 +145,7 @@ def stress(x, y):
     invFzz = adjFzz / detF
 
     c0 = (torch.tanh(c0_) + 1.0) * 100
-    c1 = (torch.tanh(c1_) + 1.0) * 100
+    c1 = (torch.tanh(c1_) + 1.0) * 50
     c2 = (torch.tanh(c2_) + 1.0) * 10
 
     Cxx = Fxx**2 + Fyx**2 + Fzx**2
@@ -171,12 +171,12 @@ def stress(x, y):
     Pzy = coeff * Fzy
 
     # Cauchy stress
-    sxx = invFxx * Pxx + invFxy * Pyx + invFxz * Pzx
-    sxy = invFxx * Pxy + invFxy * Pyy + invFxz * Pzy
-    sxz = invFxx * Pxz + invFxy * Pyz + invFxz * Pzz
-    syy = invFyx * Pxy + invFyy * Pyy + invFyz * Pzy
-    syz = invFyx * Pxz + invFyy * Pyz + invFyz * Pzz
-    szz = invFzx * Pxz + invFzy * Pyz + invFzz * Pzz
+    sxx = (Pxx * Fxx + Pxy * Fxy + Pxz * Fxz) / detF
+    sxy = (Pxx * Fyx + Pxy * Fyy + Pxz * Fyz) / detF
+    sxz = (Pxx * Fzx + Pxy * Fzy + Pxz * Fzz) / detF
+    syy = (Pyx * Fyx + Pyy * Fyy + Pyz * Fyz) / detF
+    syz = (Pyx * Fzx + Pyy * Fzy + Pyz * Fzz) / detF
+    szz = (Pzx * Fzx + Pzy * Fzy + Pzz * Fzz) / detF
 
     return sxx, sxy, sxz, syy, syz, szz
 
@@ -292,9 +292,9 @@ variables = dde.callbacks.VariableValue(
 model.compile(
     "adam",
     loss=loss_type,
-    lr=1e-4,
-    decay=["step", 10000, 0.84],
-    loss_weights=[1e-4] * 10 + [1],
+    lr=1e-3,
+    decay=["step", 15000, 0.675],
+    loss_weights=[1e-3] * 10 + [1],
     external_trainable_variables=external_trainable_variables,
 )
 
@@ -318,7 +318,7 @@ vkinfer = np.array(
 
 l, c = vkinfer.shape
 c0_pred = (np.tanh(vkinfer[:, 0]) + 1) * 100
-c1_pred = (np.tanh(vkinfer[:, 1]) + 1) * 100
+c1_pred = (np.tanh(vkinfer[:, 1]) + 1) * 50
 c2_pred = (np.tanh(vkinfer[:, 2]) + 1) * 10
 
 print("c0 prediction: ", c0_pred[-1])
