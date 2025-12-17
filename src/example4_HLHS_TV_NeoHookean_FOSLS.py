@@ -292,9 +292,9 @@ def output_transform(x, y):
     Nuy_new = Nuy + x[:, 1:2]
     Nuz_new = Nuz + x[:, 2:3]
 
-    return torch.concat(
+    return torch.cat(
         [Nux, Nuy, Nuz, NPxx, NPyy, NPzz, NPxy, NPxz, NPyz, Nux_new, Nuy_new, Nuz_new],
-        axis=1,
+        dim=1,
     )
 
 
